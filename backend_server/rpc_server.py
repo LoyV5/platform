@@ -2,9 +2,9 @@ import os
 from concurrent import futures
 import grpc
 import sys
-import edge_globals
 import torch
 import backend_globals
+from backend_store import DataStore
 sys.path.append("../")
 from backend_server.model_controller import load_a_model, get_server_utilization, load_model_files_advance
 from model_manager import object_detection, image_classification
@@ -18,6 +18,7 @@ from model_manager.model_cache import load_models
 #读取可用模型
 object_detection_models = read_config("object-detection")
 image_classification_models = read_config("image-classification")
+backend_globals.datastore=DataStore()
 
 logger.add("log/grpc-server_{time}.log")
 
@@ -88,7 +89,13 @@ def image_handler(img, model, selected_model):
     """
 
     if selected_model in object_detection_models:
-        frame_handled = object_detection.object_detection_api(img, model, threshold=0.8)
+        result = object_detection.object_detection_api(img, model, threshold=0.8)
+        frame_handled = result[0].plot()
+
+        #在云端也存一份图片和txt
+        backend_globals.datastore.store_image(frame_handled)
+        backend_globals.datastore.store_txt(result)
+
         frame_handled_shape = str(frame_handled.shape)
         img_str = transfer_array_and_str(frame_handled, 'up')
         msg_reply = msg_transfer_pb2.MsgReply(
