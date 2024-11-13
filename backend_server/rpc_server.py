@@ -92,8 +92,8 @@ def image_handler(img, model, selected_model):
         result = object_detection.object_detection_api(img, model, threshold=0.8)
         frame_handled = result[0].plot()
 
-        #在云端也存一份图片和txt
-        backend_globals.datastore.store_image(frame_handled)
+        #在云端存txt，图片默认不存
+        #backend_globals.datastore.store_image(frame_handled)
         backend_globals.datastore.store_txt(result)
 
         frame_handled_shape = str(frame_handled.shape)

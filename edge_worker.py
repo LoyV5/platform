@@ -90,7 +90,8 @@ def local_worker(task_queue):
                 logger.info("image classification result:"+result)
             elif task.serv_type == edge_globals.OBJECT_DETECTION:
                 logger.info("object detection works well! please go to info_store/handled_result to check.")
-                edge_globals.datastore.store_image(result[0].plot())
+                #本地推理只输出txt，要输出图片的话解除下面这行的注释
+                #edge_globals.datastore.store_image(result[0].plot())
                 edge_globals.datastore.store_txt(result)
                 
 
