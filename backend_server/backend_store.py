@@ -48,7 +48,7 @@ class DataStore:
         try:
             txt_path = os.path.join(self.result_store_location, "out"+str(self.n)+".txt")
             result[0].save_txt(txt_path)
-            #self.n += 1
+            self.n += 1
         except Exception as err:
             print("save txt fail:", err)
 

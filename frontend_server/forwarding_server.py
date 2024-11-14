@@ -6,7 +6,7 @@ from frontend_server.monitor import server_monitor
 sys.path.append("../")
 from tools.read_config import read_config
 from loguru import logger
-
+import json
 from flask import Flask, request, jsonify
 import time
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -32,7 +32,8 @@ def image_handler():
 
     :return: return_dict
     """
-    info_dict = request.form
+    upload_file = request.get_data()
+    info_dict = json.loads(upload_file)
     server_url = rpc_server_selection("random")
     #记录服务器当前任务数
     frontend_globals.tasks_number[server_url] += 1
