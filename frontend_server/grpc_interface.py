@@ -18,8 +18,9 @@ def get_grpc_reply(server_url, **info_dict):
     channel = grpc.insecure_channel(server_url, options=options)
     stub = msg_transfer_pb2_grpc.MsgTransferStub(channel)
     msg_request = msg_transfer_pb2.MsgRequest(
-        model=info_dict["selected_model"], frame=info_dict["frame"], frame_shape=info_dict["frame_shape"]
+        model=info_dict["selected_model"], frame=info_dict["frame"], frame_shape=info_dict["frame_shape"],ret=info_dict["ret"],compress=info_dict["compress"]
     )
+    #收到grpc回复
     try:
         msg_reply = stub.image_processor(msg_request)
     except:

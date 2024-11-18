@@ -29,6 +29,12 @@ if __name__ == '__main__':
         '-s', '--serv', type=int, default=1,
         help="input service demand, 1 for OBJECT_DETECTION",
     )
+    #设置云服务器返回的是图片还是txt,0返回txt,1返回图片，默认0
+    parser.add_argument('-t', '--ret', type=str, default='0' , help="result return")
+
+    #是否压缩图片，以jpeg方式发送,0以png发送，1以jpeg发送，默认0
+    parser.add_argument('-c', '--compress', type=str, default='0', help="post png/jpeg")
+
     #帧读取间隔
     parser.add_argument('-i', '--interval', type=int, help="interval between reading two frames in ms", required=True)
     args = parser.parse_args()
@@ -41,6 +47,8 @@ if __name__ == '__main__':
     serv_type = 1  # args.serv
     INTERVAL = args.interval / 1000.0  # convert into seconds
     input_file = args.file
+    res_return = args.ret
+    cmprs = args.compress
     if input_file is not None:
         if os.path.isfile(input_file) is False and input_file.isdigit() is False:
             logger.error("input video file or local camera does not exist")
@@ -102,7 +110,7 @@ if __name__ == '__main__':
         # create the inference as a task
         task_id = id_gen()
         t_start = time.time()
-        task = Task(task_id, frame, serv_type, t_start)
+        task = Task(task_id, frame, serv_type, t_start, res_return, cmprs)
 
         # make decision on video frame processing
         # 视频帧处理决策

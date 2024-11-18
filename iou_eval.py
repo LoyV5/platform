@@ -15,7 +15,7 @@ inf_dir='/home/ustc/multi/labels'
 #对照结果
 eval_dir='/home/ustc/multi/eval'
 
-#读取所有文件名
+#自动读取inf_dir内的文件名然后与eval_dir中的对应文件进行匹配
 #文件夹里最好全都是.txt
 files=os.listdir(inf_dir)
 

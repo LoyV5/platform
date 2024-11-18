@@ -1,3 +1,0 @@
-2024-07-17 09:49:08.757 | INFO     | __main__:serve:108 - grpc server loading...
-2024-07-17 09:49:08.993 | INFO     | __main__:serve:110 - server models have loaded!
-2024-07-17 09:49:08.999 | INFO     | __main__:serve:124 - server start!

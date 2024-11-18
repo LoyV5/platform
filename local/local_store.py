@@ -6,6 +6,7 @@ import cv2
 import datetime
 import edge_globals
 from loguru import logger
+import json
 
 
 class DataStore:
@@ -43,7 +44,7 @@ class DataStore:
         except Exception as err:
             print("save image fail:", err)
 
-    #新增，用于存放检测后的txt数据
+    #新增，用于存放本地检测后的txt数据
     def store_txt(self, result):
         """
         保存检测结果的txt数据
@@ -53,10 +54,25 @@ class DataStore:
         try:
             txt_path = os.path.join(self.result_store_location, "out"+str(self.n)+".txt")
             result[0].save_txt(txt_path)
-            #self.n += 1
+            self.n += 1
         except Exception as err:
             print("save txt fail:", err)
-
+    
+    #新增，用于存放服务器检测后返回的txt数据(以nparray数组列表形式返回)
+    def store_txtjson(self, texts):
+        """
+        保存检测结果的txt数据
+        """
+        if not os.path.exists(self.result_store_location):
+            os.mkdir(self.result_store_location)
+        try:
+            txt_path = os.path.join(self.result_store_location, "out"+str(self.n)+".txt")
+            with open(txt_path, 'w') as f:
+                f.writelines(text + "\n" for text in texts)
+            self.n += 1
+        except Exception as err:
+            print("save txt fail:", err)
+  
     def store_video(self, frame):
         """Write a image frame into a video file.
 

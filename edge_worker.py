@@ -6,7 +6,7 @@ import random
 import numpy as np
 from loguru import logger
 from concurrent import futures
-
+import json
 import edge_globals
 
 from tools.read_config import read_config
@@ -33,12 +33,14 @@ class ThreadPoolExecutorWithQueueSizeLimit(futures.ThreadPoolExecutor):
 
 
 class Task:
-
-    def __init__(self, task_id, frame, serv_type, t_start):
+    #ret为返回的结果类型img/txt
+    def __init__(self, task_id, frame, serv_type, t_start, res_return,cmprs):
         self.task_id = task_id
         self.frame = frame
         self.serv_type = serv_type
         self.t_start = t_start
+        self.ret=res_return
+        self.compress=cmprs
         self.selected_model = None
         self.location = None
         self.new_size = None
@@ -109,7 +111,7 @@ def offload_worker(task):
     try:
         #尝试发送帧,frame_handler是forward服务器地址
         result_dict, start_time, processing_delay, arrive_transfer_server_time = \
-            send_frame(frame_handler, task.frame, task.selected_model)
+            send_frame(frame_handler, task.frame, task.selected_model,task.ret,task.compress)
         t_end = time.time()
     except Exception as err:
         logger.exception("offloading error")
@@ -131,6 +133,16 @@ def offload_worker(task):
         elif task.serv_type == edge_globals.OBJECT_DETECTION:
     
             frame_shape = tuple(int(s) for s in result_dict["frame_shape"][1:-1].split(","))
-            frame_handled = transfer_array_and_str(result_dict["result"], 'down').reshape(frame_shape)
-            edge_globals.datastore.store_image(frame_handled)
-            logger.info("cloud process image well!")
+
+            if task.ret=='1':
+                frame_handled = transfer_array_and_str(result_dict["result"], 'down').reshape(frame_shape)
+                edge_globals.datastore.store_image(frame_handled)
+                logger.info("cloud process image well!")
+
+            #处理返回的txt数据
+            else:
+                texts=json.loads(result_dict["result"])
+                edge_globals.datastore.store_txtjson(texts)
+                logger.info("cloud process image well!")
+
+

@@ -14,6 +14,8 @@ from tools.read_config import read_config
 from loguru import logger
 from config.model_info import cloud_object_detection_model
 from model_manager.model_cache import load_models
+import json
+import cv2
 
 #读取可用模型
 object_detection_models = read_config("object-detection")
@@ -42,9 +44,18 @@ class MsgTransferServer(msg_transfer_pb2_grpc.MsgTransferServicer):
         selected_model = request.model
         frame = request.frame
         frame_shape = tuple(int(s) for s in request.frame_shape[1:-1].split(","))
+        ret=request.ret
+        compress=request.compress
         model = backend_globals.loaded_model[selected_model]
-        img = transfer_array_and_str(frame, 'down').reshape(frame_shape)
-        msg_reply = image_handler(img, model, selected_model)
+        #base64转nparray图片
+        img = transfer_array_and_str(frame, 'down')
+        #如果是jpeg需要先解码
+        if compress=='1':
+            img = cv2.imdecode(img,cv2.IMREAD_COLOR)
+        
+        img = img.reshape(frame_shape)
+
+        msg_reply = image_handler(img, model, selected_model,ret)
 
         return msg_reply
 
@@ -79,7 +90,7 @@ class MsgTransferServer(msg_transfer_pb2_grpc.MsgTransferServicer):
         return load_specified_model_reply
 
 
-def image_handler(img, model, selected_model):
+def image_handler(img, model, selected_model,ret):
     """Image process function
 
     :param img: image frame
@@ -89,18 +100,35 @@ def image_handler(img, model, selected_model):
     """
 
     if selected_model in object_detection_models:
-        result = object_detection.object_detection_api(img, model, threshold=0.8)
-        frame_handled = result[0].plot()
+        result = object_detection.object_detection_api(img, model, threshold=0.7)
+        if ret=='1':
+            #返回图片
+            frame_handled = result[0].plot()
 
-        #在云端存txt，图片默认不存
-        #backend_globals.datastore.store_image(frame_handled)
-        backend_globals.datastore.store_txt(result)
+            #在云端默认不存,发txt回本地
+            #backend_globals.datastore.store_image(frame_handled)
+            #backend_globals.datastore.store_txt(result)
 
-        frame_handled_shape = str(frame_handled.shape)
-        img_str = transfer_array_and_str(frame_handled, 'up')
-        msg_reply = msg_transfer_pb2.MsgReply(
+            frame_handled_shape = str(frame_handled.shape)
+            img_str = transfer_array_and_str(frame_handled, 'up')
+            msg_reply = msg_transfer_pb2.MsgReply(
             result=img_str, frame_shape=frame_handled_shape
-        )
+            )
+        else:
+            frame_handled = result[0].plot()
+            frame_handled_shape = str(frame_handled.shape)
+
+            #返回txt json
+            texts=[]
+            for j, d in enumerate(result[0].boxes):
+                c = int(d.cls)
+                line = (c, * d.xywhn.view(-1))
+                texts.append(("%g " * len(line)).rstrip() % line)
+
+            txt_json =json.dumps(texts)
+            msg_reply = msg_transfer_pb2.MsgReply(
+            result=txt_json, frame_shape=frame_handled_shape
+            )
         return msg_reply
     else:
         result = image_classification.image_classification(img, model)
