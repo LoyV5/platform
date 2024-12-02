@@ -12,9 +12,11 @@ from tools.read_config import read_config
 from local.local_store import DataStore
 from local.video_reader import VideoReader
 from local.decision_engine import DecisionEngine
+from local.forward_polling import Fpolling
 from model_manager.model_cache import load_models
 from config.model_info import edge_object_detection_model
 from edge_worker import local_worker, offload_worker, Task, id_gen, ThreadPoolExecutorWithQueueSizeLimit
+from apscheduler.schedulers.background import BackgroundScheduler
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -37,7 +39,13 @@ if __name__ == '__main__':
 
     #帧读取间隔
     parser.add_argument('-i', '--interval', type=int, help="interval between reading two frames in ms", required=True)
+
+    parser.add_argument('-wd', '--width', type=int, default=640, help="input w")
+    
+    parser.add_argument('-ht', '--height', type=int, default=640, help="input h")
+
     args = parser.parse_args()
+
 
     #生成日志文件
 
@@ -49,6 +57,8 @@ if __name__ == '__main__':
     input_file = args.file
     res_return = args.ret
     cmprs = args.compress
+    imgsz = (args.width,args.height)
+
     if input_file is not None:
         if os.path.isfile(input_file) is False and input_file.isdigit() is False:
             logger.error("input video file or local camera does not exist")
@@ -90,12 +100,18 @@ if __name__ == '__main__':
     local_processor = threading.Thread(target=local_worker, args=(task_queue,))
     local_processor.start()
 
+    #定期向forward轮询服务器信息
+    url = read_config("polling-url", "pol_url")
+    sched = BackgroundScheduler(daemon=True)
+    sched.add_job(Fpolling, 'interval', seconds=5,args=(url,))
+    sched.start()
+
     # n = 0
     # read frames from video file or camera in loop
     # 从视频文件或相机循环中读取帧
     while True:
 
-        frame = reader.read_frame()
+        frame = reader.read_frame(imgsz)
         if frame is None:
             executor.shutdown(wait=True)
             local_processor.join(timeout=20)

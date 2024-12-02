@@ -61,7 +61,6 @@ class DecisionEngine:
         self.last_frame = None
 
     def get_decision(self, policy, task):
-        # task = threshold_offload_policy(task)
         # make decision based on the policy
         task = self.policy_set[policy](task)
         # save the frame for differencing in the next time

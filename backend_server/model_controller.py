@@ -7,6 +7,8 @@ from tools.read_config import read_config
 from torchvision.models.detection import *
 from torchvision.models import *
 from loguru import logger
+import GPUtil
+
 
 
 def load_model_files_advance():
@@ -79,7 +81,7 @@ def unload_model(model_name):
     del backend_globals.loaded_model[model_name]
 
 
-def get_server_utilization():
+def get_server_utilization(imgsz):
     """Get the cpu usage and memory usage of the device.
 
     Getting the cpu usage and memory usage of the device,
@@ -87,7 +89,10 @@ def get_server_utilization():
 
     :return: server_utilization_reply, a data structure defined in grpc
     """
+    gpus = GPUtil.getGPUs()
     cpu_usage = psutil.cpu_percent()
     memory_usage = psutil.virtual_memory().percent
-    server_utilization_reply = msg_transfer_pb2.Server_Utilization_Reply(cpu_usage=cpu_usage, memory_usage=memory_usage)
+    gpu_usage = gpus[0].load*100
+
+    server_utilization_reply = msg_transfer_pb2.Server_Utilization_Reply(cpu_usage=cpu_usage, memory_usage=memory_usage,gpu_usage=gpu_usage,imgsz=imgsz)
     return server_utilization_reply

@@ -3,7 +3,6 @@
 import grpc
 import warnings
 
-
 from backend_server.grpc_config import msg_transfer_pb2 as msg__transfer__pb2
 
 GRPC_GENERATED_VERSION = '1.64.1'
@@ -60,6 +59,11 @@ class MsgTransferStub(object):
                 request_serializer=msg__transfer__pb2.Load_Specified_Model_Request.SerializeToString,
                 response_deserializer=msg__transfer__pb2.Load_Specified_Model_Reply.FromString,
                 _registered_method=True)
+        self.get_server_inputsize = channel.unary_unary(
+                '/MsgTransfer/get_server_inputsize',
+                request_serializer=msg__transfer__pb2.Server_Inputsize_Request.SerializeToString,
+                response_deserializer=msg__transfer__pb2.Server_Inputsize_Reply.FromString,
+                _registered_method=True)
 
 
 class MsgTransferServicer(object):
@@ -89,6 +93,12 @@ class MsgTransferServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def get_server_inputsize(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_MsgTransferServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -111,6 +121,11 @@ def add_MsgTransferServicer_to_server(servicer, server):
                     servicer.load_specified_model,
                     request_deserializer=msg__transfer__pb2.Load_Specified_Model_Request.FromString,
                     response_serializer=msg__transfer__pb2.Load_Specified_Model_Reply.SerializeToString,
+            ),
+            'get_server_inputsize': grpc.unary_unary_rpc_method_handler(
+                    servicer.get_server_inputsize,
+                    request_deserializer=msg__transfer__pb2.Server_Inputsize_Request.FromString,
+                    response_serializer=msg__transfer__pb2.Server_Inputsize_Reply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -221,6 +236,33 @@ class MsgTransfer(object):
             '/MsgTransfer/load_specified_model',
             msg__transfer__pb2.Load_Specified_Model_Request.SerializeToString,
             msg__transfer__pb2.Load_Specified_Model_Reply.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def get_server_inputsize(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/MsgTransfer/get_server_inputsize',
+            msg__transfer__pb2.Server_Inputsize_Request.SerializeToString,
+            msg__transfer__pb2.Server_Inputsize_Reply.FromString,
             options,
             channel_credentials,
             insecure,

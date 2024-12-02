@@ -16,6 +16,8 @@ from config.model_info import cloud_object_detection_model
 from model_manager.model_cache import load_models
 import json
 import cv2
+import argparse
+
 
 #读取可用模型
 object_detection_models = read_config("object-detection")
@@ -26,6 +28,25 @@ logger.add("log/grpc-server_{time}.log")
 
 # if torch.cuda.is_available():
 #     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
+parser = argparse.ArgumentParser()
+
+#yolo模型的input size,需要宽和高w,h
+parser.add_argument('-wd', '--width', type=int, default=640, help="input w")
+    
+parser.add_argument('-ht', '--height', type=int, default=640, help="input h")
+
+args = parser.parse_args()
+
+wid=args.width
+
+hgt=args.height
+
+imgsz=(wid,hgt)
+
+frame_shp=(wid,hgt,3)
+
+str_imgsz= f"({','.join(map(str, frame_shp))})"
 
 
 class MsgTransferServer(msg_transfer_pb2_grpc.MsgTransferServicer):
@@ -59,12 +80,12 @@ class MsgTransferServer(msg_transfer_pb2_grpc.MsgTransferServicer):
 
         return msg_reply
 
-    def get_server_utilization(self, request, context):
+    def get_server_utilization(self, request, context,imgsz=str_imgsz):
         """Server utilization interface
 
         Return server utilization to the client.
         """
-        server_utilization_reply = get_server_utilization()
+        server_utilization_reply = get_server_utilization(imgsz)
 
         return server_utilization_reply
 
@@ -100,7 +121,7 @@ def image_handler(img, model, selected_model,ret):
     """
 
     if selected_model in object_detection_models:
-        result = object_detection.object_detection_api(img, model, threshold=0.7)
+        result,inftime = object_detection.object_detection_api(img, model, threshold=0.7,imgsz=imgsz)
         if ret=='1':
             #返回图片
             frame_handled = result[0].plot()
@@ -111,12 +132,14 @@ def image_handler(img, model, selected_model,ret):
 
             frame_handled_shape = str(frame_handled.shape)
             img_str = transfer_array_and_str(frame_handled, 'up')
+            inftime = str(inftime)
             msg_reply = msg_transfer_pb2.MsgReply(
             result=img_str, frame_shape=frame_handled_shape
             )
         else:
             frame_handled = result[0].plot()
             frame_handled_shape = str(frame_handled.shape)
+            inftime = str(inftime)
 
             #返回txt json
             texts=[]
@@ -127,7 +150,7 @@ def image_handler(img, model, selected_model,ret):
 
             txt_json =json.dumps(texts)
             msg_reply = msg_transfer_pb2.MsgReply(
-            result=txt_json, frame_shape=frame_handled_shape
+            result=txt_json, frame_shape=frame_handled_shape, inftime=inftime
             )
         return msg_reply
     else:

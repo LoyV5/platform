@@ -10,10 +10,18 @@ def server_monitor():
     """
     frontend_globals.cpu_usage = []
     frontend_globals.memory_usage = []
+    frontend_globals.gpu_usage = []
+    frontend_globals.imgsz = []
+
     for grpc_server in frontend_globals.grpc_servers:
-        new_cpu_usage, new_memory_usage = get_server_utilization(grpc_server)
+        new_cpu_usage, new_memory_usage, new_gpu_usage, new_imgsz = get_server_utilization(grpc_server)
         frontend_globals.cpu_usage.append(new_cpu_usage)
         frontend_globals.memory_usage.append(new_memory_usage)
+        frontend_globals.gpu_usage.append(new_gpu_usage)
+        frontend_globals.imgsz.append(new_imgsz)
+
     logger.info("cpu_usage:" + str(frontend_globals.cpu_usage))
     logger.info("memory_usage" + str(frontend_globals.memory_usage))
+    logger.info("gpu_usage" + str(frontend_globals.gpu_usage))
+    logger.info("imgsz" + str(frontend_globals.imgsz))
 

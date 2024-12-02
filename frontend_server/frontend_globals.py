@@ -17,9 +17,17 @@ def init():
     global cpu_usage
     global memory_usage
 
+    #gpu的使用率，各个服务器模型的imgsz
+    global gpu_usage
+    global imgsz
+
+
     grpc_servers = read_config("grpc-url")
     cpu_usage = []
     memory_usage = []
+    gpu_usage= []
+    imgsz= []
+
 
     global distribution_function
     distribution_function = {

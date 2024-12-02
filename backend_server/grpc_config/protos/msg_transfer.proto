@@ -6,6 +6,7 @@ service MsgTransfer {
   rpc get_server_utilization(Server_Utilization_Request) returns (Server_Utilization_Reply) {}
   rpc get_loaded_models_name (Loaded_Model_Name_Request) returns (Loaded_Model_Name_Reply) {}
   rpc load_specified_model (Load_Specified_Model_Request) returns (Load_Specified_Model_Reply) {}
+  rpc get_server_inputsize (Server_Inputsize_Request) returns (Server_Inputsize_Reply) {}
 
 }
 
@@ -20,9 +21,10 @@ message MsgRequest {
 }
 
 message MsgReply {
-
-  string result = 2;
-  string frame_shape = 3;
+  
+  string result = 1;
+  string frame_shape = 2;
+  string inftime = 3;
 
 }
 
@@ -32,6 +34,16 @@ message Server_Utilization_Reply {
 
   float cpu_usage = 1;
   float memory_usage = 2;
+  float gpu_usage = 3;
+  string imgsz = 4;
+
+}
+
+message Server_Inputsize_Request {}
+
+message Server_Inputsize_Reply {
+
+  string inputsize = 1;
 
 }
 

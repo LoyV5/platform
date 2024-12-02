@@ -32,3 +32,18 @@ python forwarding_server.py
 
 待完成：jpeg质量参数未做决策
 
+
+
+#2024.11.28
+
+edge和cloud新增参数-wd -ht，可以指定输入图片的宽和高
+
+
+
+fforward新增服务器选择策略pick_input,基于输入图片宽和高选择对应服务器
+
+
+
+#2024.11.30 
+
+服务器目前可以返回性能数据，保存在output.json和server_info.json中

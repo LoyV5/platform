@@ -1,5 +1,5 @@
 import sys
-from dispatch_policy import random_policy, shortest_queue, lowest_cpu_utilization
+from dispatch_policy import random_policy, shortest_queue, lowest_cpu_utilization, pick_input
 from frontend_server.grpc_interface import get_grpc_reply
 import frontend_globals
 from frontend_server.monitor import server_monitor
@@ -34,7 +34,9 @@ def image_handler():
     """
     upload_file = request.get_data()
     info_dict = json.loads(upload_file)
-    server_url = rpc_server_selection("random")
+    img_shape = info_dict["frame_shape"]
+
+    server_url = rpc_server_selection("input_size",img_shape)
     #记录服务器当前任务数
     frontend_globals.tasks_number[server_url] += 1
     t1 = time.time()
@@ -49,17 +51,35 @@ def image_handler():
     if msg_reply.frame_shape == "":
         return_dict = {
             "prediction": msg_reply.result,
-            "process_time": t2 - t1}
+            "process_time": t2 - t1,
+            "inftime":msg_reply.inftime
+            }
         return jsonify(return_dict)
     else:
         return_dict = {
             "frame_shape": msg_reply.frame_shape,
             "result": msg_reply.result,
-            "process_time": t2 - t1}
+            "process_time": t2 - t1,
+            "inftime":msg_reply.inftime
+            }
         return jsonify(return_dict)
+    
+@app.route('/server_info', methods=['GET'])
+def server_info():
+    info={}
 
-
-def rpc_server_selection(policy):
+    for grpc_server in frontend_globals.grpc_servers:
+        num=frontend_globals.grpc_servers.index(grpc_server)
+        info[grpc_server] = {
+            "tasks_number":frontend_globals.tasks_number[grpc_server],
+            "gpu_usage":frontend_globals.gpu_usage[num],
+            "cpu_usage":frontend_globals.cpu_usage[num],
+            "memory_usage":frontend_globals.memory_usage[num]
+        }
+    
+    return jsonify(info)
+       
+def rpc_server_selection(policy,img_shape):
     """Select a grpc server to which info will send.
 
     :param policy decide the policy of selecting a grpc server
@@ -69,6 +89,11 @@ def rpc_server_selection(policy):
         grpc_server = random_policy()
     elif policy == 'tasks_queue':
         grpc_server = shortest_queue()
+    elif policy == 'input_size':
+        grpc_server = pick_input(img_shape)
+        #如果没找到匹配的大小,暂时先随机
+        if grpc_server is None:
+            grpc_server = random_policy()
     else:
         grpc_server = lowest_cpu_utilization()
     return grpc_server

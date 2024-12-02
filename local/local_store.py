@@ -20,6 +20,8 @@ class DataStore:
         time = datetime.datetime.now()
         store_path = os.path.join(os.path.dirname(__file__), "../info_store/handled_result")
         self.n = 0
+        self.dicts=[]
+        self.server_info=[]
         self.result_store_location = os.path.join(
             store_path, time.strftime('%a%b%d%H%M')
         )
@@ -72,6 +74,54 @@ class DataStore:
             self.n += 1
         except Exception as err:
             print("save txt fail:", err)
+
+    #新增，用于存放服务器检测后返回的txt数据(以nparray数组列表形式返回)
+    #
+    def store_json(self, task):
+        """
+        以json形式保存时延等结果数据
+        """
+
+        data = {
+            "id":task.task_id,
+            "trans_time":task.t_trans,
+            "wait_time":task.t_wait,
+            "inf_time":task.t_inf,
+            "proc_time":task.t_all
+        }
+
+        self.dicts.append(data)
+
+        if not os.path.exists(self.result_store_location):
+            os.mkdir(self.result_store_location)
+        try:
+            json_path = os.path.join(self.result_store_location, "output.json")
+            # 创建json并写入
+            with open(json_path, "w") as f_new:
+                json.dump(self.dicts,f_new,indent=4)
+                
+        except Exception as err:
+            print("save json fail:", err)
+
+    #新增，用于存放轮询回来的服务器数据
+    def store_info(self, info):
+        """
+        以json形式保存服务器数据
+        """
+
+        self.server_info.append(info)
+
+        if not os.path.exists(self.result_store_location):
+            os.mkdir(self.result_store_location)
+        try:
+            json_path = os.path.join(self.result_store_location, "server_info.json")
+            # 创建json并写入
+            with open(json_path, "w") as f:
+                json.dump(self.server_info,f,indent=4)
+                
+        except Exception as err:
+            print("save json fail:", err)
+    
   
     def store_video(self, frame):
         """Write a image frame into a video file.

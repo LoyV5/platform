@@ -29,7 +29,7 @@ def get_grpc_reply(server_url, **info_dict):
     else:
         return msg_reply
 
-#获取服务器cpu使用率
+#获取服务器信息
 def get_server_utilization(grpc_server):
     """Get the cpu usage of grpc server
 
@@ -43,7 +43,7 @@ def get_server_utilization(grpc_server):
         server_utilization_reply = stub.get_server_utilization(server_utilization_request)
     except TimeoutError as err:
         logger.exception("Get server utilization error:", err)
-    return server_utilization_reply.cpu_usage, server_utilization_reply.memory_usage
+    return server_utilization_reply.cpu_usage, server_utilization_reply.memory_usage, server_utilization_reply.gpu_usage, server_utilization_reply.imgsz
 
 #请求某个特定服务器加载模型(暂未使用)
 def load_specified_model(grpc_server, model_name):

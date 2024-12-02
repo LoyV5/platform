@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x12msg_transfer.proto\"^\n\nMsgRequest\x12\r\n\x05model\x18\x01 \x01(\t\x12\r\n\x05\x66rame\x18\x02 \x01(\t\x12\x13\n\x0b\x66rame_shape\x18\x03 \x01(\t\x12\x0b\n\x03ret\x18\x04 \x01(\t\x12\x10\n\x08\x63ompress\x18\x05 \x01(\t\"/\n\x08MsgReply\x12\x0e\n\x06result\x18\x02 \x01(\t\x12\x13\n\x0b\x66rame_shape\x18\x03 \x01(\t\"\x1c\n\x1aServer_Utilization_Request\"C\n\x18Server_Utilization_Reply\x12\x11\n\tcpu_usage\x18\x01 \x01(\x02\x12\x14\n\x0cmemory_usage\x18\x02 \x01(\x02\"\x1b\n\x19Loaded_Model_Name_Request\"4\n\x17Loaded_Model_Name_Reply\x12\x19\n\x11loaded_model_name\x18\x01 \x01(\t\"7\n\x1cLoad_Specified_Model_Request\x12\x17\n\x0fspecified_model\x18\x01 \x01(\t\"\x1c\n\x1aLoad_Specified_Model_Reply2\xb6\x02\n\x0bMsgTransfer\x12+\n\x0fimage_processor\x12\x0b.MsgRequest\x1a\t.MsgReply\"\x00\x12R\n\x16get_server_utilization\x12\x1b.Server_Utilization_Request\x1a\x19.Server_Utilization_Reply\"\x00\x12P\n\x16get_loaded_models_name\x12\x1a.Loaded_Model_Name_Request\x1a\x18.Loaded_Model_Name_Reply\"\x00\x12T\n\x14load_specified_model\x12\x1d.Load_Specified_Model_Request\x1a\x1b.Load_Specified_Model_Reply\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x12msg_transfer.proto\"^\n\nMsgRequest\x12\r\n\x05model\x18\x01 \x01(\t\x12\r\n\x05\x66rame\x18\x02 \x01(\t\x12\x13\n\x0b\x66rame_shape\x18\x03 \x01(\t\x12\x0b\n\x03ret\x18\x04 \x01(\t\x12\x10\n\x08\x63ompress\x18\x05 \x01(\t\"@\n\x08MsgReply\x12\x0e\n\x06result\x18\x01 \x01(\t\x12\x13\n\x0b\x66rame_shape\x18\x02 \x01(\t\x12\x0f\n\x07inftime\x18\x03 \x01(\t\"\x1c\n\x1aServer_Utilization_Request\"e\n\x18Server_Utilization_Reply\x12\x11\n\tcpu_usage\x18\x01 \x01(\x02\x12\x14\n\x0cmemory_usage\x18\x02 \x01(\x02\x12\x11\n\tgpu_usage\x18\x03 \x01(\x02\x12\r\n\x05imgsz\x18\x04 \x01(\t\"\x1a\n\x18Server_Inputsize_Request\"+\n\x16Server_Inputsize_Reply\x12\x11\n\tinputsize\x18\x01 \x01(\t\"\x1b\n\x19Loaded_Model_Name_Request\"4\n\x17Loaded_Model_Name_Reply\x12\x19\n\x11loaded_model_name\x18\x01 \x01(\t\"7\n\x1cLoad_Specified_Model_Request\x12\x17\n\x0fspecified_model\x18\x01 \x01(\t\"\x1c\n\x1aLoad_Specified_Model_Reply2\x84\x03\n\x0bMsgTransfer\x12+\n\x0fimage_processor\x12\x0b.MsgRequest\x1a\t.MsgReply\"\x00\x12R\n\x16get_server_utilization\x12\x1b.Server_Utilization_Request\x1a\x19.Server_Utilization_Reply\"\x00\x12P\n\x16get_loaded_models_name\x12\x1a.Loaded_Model_Name_Request\x1a\x18.Loaded_Model_Name_Reply\"\x00\x12T\n\x14load_specified_model\x12\x1d.Load_Specified_Model_Request\x1a\x1b.Load_Specified_Model_Reply\"\x00\x12L\n\x14get_server_inputsize\x12\x19.Server_Inputsize_Request\x1a\x17.Server_Inputsize_Reply\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -24,19 +24,23 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_MSGREQUEST']._serialized_start=22
   _globals['_MSGREQUEST']._serialized_end=116
   _globals['_MSGREPLY']._serialized_start=118
-  _globals['_MSGREPLY']._serialized_end=165
-  _globals['_SERVER_UTILIZATION_REQUEST']._serialized_start=167
-  _globals['_SERVER_UTILIZATION_REQUEST']._serialized_end=195
-  _globals['_SERVER_UTILIZATION_REPLY']._serialized_start=197
-  _globals['_SERVER_UTILIZATION_REPLY']._serialized_end=264
-  _globals['_LOADED_MODEL_NAME_REQUEST']._serialized_start=266
-  _globals['_LOADED_MODEL_NAME_REQUEST']._serialized_end=293
-  _globals['_LOADED_MODEL_NAME_REPLY']._serialized_start=295
-  _globals['_LOADED_MODEL_NAME_REPLY']._serialized_end=347
-  _globals['_LOAD_SPECIFIED_MODEL_REQUEST']._serialized_start=349
-  _globals['_LOAD_SPECIFIED_MODEL_REQUEST']._serialized_end=404
-  _globals['_LOAD_SPECIFIED_MODEL_REPLY']._serialized_start=406
-  _globals['_LOAD_SPECIFIED_MODEL_REPLY']._serialized_end=434
-  _globals['_MSGTRANSFER']._serialized_start=437
-  _globals['_MSGTRANSFER']._serialized_end=747
+  _globals['_MSGREPLY']._serialized_end=182
+  _globals['_SERVER_UTILIZATION_REQUEST']._serialized_start=184
+  _globals['_SERVER_UTILIZATION_REQUEST']._serialized_end=212
+  _globals['_SERVER_UTILIZATION_REPLY']._serialized_start=214
+  _globals['_SERVER_UTILIZATION_REPLY']._serialized_end=315
+  _globals['_SERVER_INPUTSIZE_REQUEST']._serialized_start=317
+  _globals['_SERVER_INPUTSIZE_REQUEST']._serialized_end=343
+  _globals['_SERVER_INPUTSIZE_REPLY']._serialized_start=345
+  _globals['_SERVER_INPUTSIZE_REPLY']._serialized_end=388
+  _globals['_LOADED_MODEL_NAME_REQUEST']._serialized_start=390
+  _globals['_LOADED_MODEL_NAME_REQUEST']._serialized_end=417
+  _globals['_LOADED_MODEL_NAME_REPLY']._serialized_start=419
+  _globals['_LOADED_MODEL_NAME_REPLY']._serialized_end=471
+  _globals['_LOAD_SPECIFIED_MODEL_REQUEST']._serialized_start=473
+  _globals['_LOAD_SPECIFIED_MODEL_REQUEST']._serialized_end=528
+  _globals['_LOAD_SPECIFIED_MODEL_REPLY']._serialized_start=530
+  _globals['_LOAD_SPECIFIED_MODEL_REPLY']._serialized_end=558
+  _globals['_MSGTRANSFER']._serialized_start=561
+  _globals['_MSGTRANSFER']._serialized_end=949
 # @@protoc_insertion_point(module_scope)

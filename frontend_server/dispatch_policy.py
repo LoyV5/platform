@@ -32,6 +32,20 @@ def lowest_cpu_utilization():
     key = frontend_globals.grpc_servers[selected_server]
     return key
 
+def pick_input(shape):
+    """
+    根据输入的imgshape选择对应服务器
+    """
+    try:
+        selected_server = frontend_globals.imgsz.index(shape)
+    except ValueError:
+        return None
+    key = frontend_globals.grpc_servers[selected_server]
+    return key
+
+
+    
+    
 
 
 
